@@ -3,6 +3,7 @@
 <p align="left">
   <img src="https://github.com/Zhoneym/unofficial-archrootfs/assets/140673973/a1f7322b-b56e-4696-9d1b-9487121b02aa" width="75"/>
 </p>
+
 [![Build Arch Linux rootfs](https://github.com/Zhoneym/unofficial-archrootfs/actions/workflows/build.yml/badge.svg)](https://github.com/Zhoneym/unofficial-archrootfs/actions/workflows/build.yml)
 
 
