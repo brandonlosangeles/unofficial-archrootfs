@@ -1,0 +1,146 @@
+name: Build Arch Linux rootfs
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+      options: --privileged
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Pacstrap   
+      run: |
+        pacman -Syyu --noconfirm arch-install-scripts
+        mkdir base
+        pacstrap ./base base
+        echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' > ./base/etc/pacman.d/mirrorlist
+        curl -o ./base/etc/pacman.conf https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/raw/main/pacman.conf?inline=false
+        cd ./base
+        rm -rf var/cache/pacman/pkg/*
+        rm -rf var/tmp
+        rm -rf var/games
+        rm -rf var/empty
+        rm -rf var/spool
+        rm -rf var/opt
+        rm -rf usr/src
+        rm -rf usr/local/src
+        rm -rf sys
+        rm -rf tmp
+        rm -rf boot
+        rm -rf proc
+        rm -rf dev
+        rm -rf mnt
+        rm -rf run
+        tar cJf ../base-rootfs.tar.xz .
+        sha256sum ../base-rootfs.tar.xz > ../base-rootfs.tar.xz.sha256
+        cd ..
+        mkdir base-devel
+        pacstrap ./base-devel base base-devel
+        echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' > ./base-devel/etc/pacman.d/mirrorlist
+        curl -o ./base-devel/etc/pacman.conf https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/raw/main/pacman.conf?inline=false
+        cd ./base-devel
+        rm -rf var/cache/pacman/pkg/*
+        rm -rf var/tmp
+        rm -rf var/games
+        rm -rf var/empty
+        rm -rf var/spool
+        rm -rf var/opt
+        rm -rf usr/src
+        rm -rf usr/local/src
+        rm -rf sys
+        rm -rf tmp
+        rm -rf boot
+        rm -rf proc
+        rm -rf dev
+        rm -rf mnt
+        rm -rf run
+        tar cJf ../base-devel-rootfs.tar.xz .
+        sha256sum ../base-devel-rootfs.tar.xz > ../base-devel-rootfs.tar.xz.sha256
+        cd ..
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts
+        path: |
+         base-rootfs.tar.xz
+         base-rootfs.tar.xz.sha256
+         base-devel-rootfs.tar.xz
+         base-devel-rootfs.tar.xz.sha256
+    
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Set TAG_NAME
+      run: | 
+        echo "TAG_NAME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
+    - uses: actions/download-artifact@v2
+      with:
+        name: artifacts
+        path: release_images/
+    - name: Copy rootfs
+      run: |
+        cp release_images/base-rootfs.tar.xz ./base-rootfs.tar.xz
+        cp release_images/base-devel-rootfs.tar.xz ./base-devel-rootfs.tar.xz
+    - name: Unzip rootfs 
+      run: |
+        mkdir -p ./base
+        mkdir -p ./base-devel
+        tar xf base-rootfs.tar.xz -C ./base
+        tar xf base-devel-rootfs.tar.xz -C ./base-devel  
+    - name: Generate Dockerfiles
+      run: |
+        cat > Dockerfile <<EOF 
+        FROM scratch
+        COPY ./base /
+        CMD ["/bin/bash"]
+        EOF
+    - name: ls -l
+      run: ls -l && ls -l ./base && ls -l ./base-devel 
+    - name: Build base image
+      run: |
+        docker build -t zhoneym/unofficial-archrootfs-base:latest -f ./Dockerfile ./
+        rm -rf Dockerfile
+    - name: Generate Dockerfiles
+      run: |
+        cat > Dockerfile <<EOF 
+        FROM scratch
+        COPY ./base-devel /
+        CMD ["/bin/bash"]
+        EOF
+    - name: Build base-devel image
+      run: |
+        docker build -t zhoneym/unofficial-archrootfs-base-devel:latest -f ./Dockerfile ./
+        rm -rf Dockerfile
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Push base image
+      run: docker push zhoneym/unofficial-archrootfs-base:latest
+
+    - name: Push base-devel image
+      run: docker push zhoneym/unofficial-archrootfs-base-devel:latest
+    
+    - name: Release rootfs
+      uses: softprops/action-gh-release@v1
+      env:
+        TAG_NAME: ${{ env.TAG_NAME }}
+      with:
+        name: ${{ env.TAG_NAME }}
+        tag_name: ${{ env.TAG_NAME }}
+        body: |
+          This is an unofficial repacked Arch Linux rootfs that complies with OCI standards and is also suitable for Microsoft WSL2
+
+        files: |
+          release_images/*
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fail_on_unmatched_files: true
