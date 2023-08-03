@@ -1,6 +1,6 @@
 # unofficial-archrootfs
 
-![Arch Linux](blob:https://github.com/0ab9bc70-f610-48a3-b1ca-395e5a60646a)
+[Arch Linux](https://raw.githubusercontent.com/Zhoneym/unofficial-archrootfs/main/Arch%20Linux.png)
 
 This is an unofficial packaging that conforms to the OCI standard rootfs and is also applicable to Microsoft WSL2
 
