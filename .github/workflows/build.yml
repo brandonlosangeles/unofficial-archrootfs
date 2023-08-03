@@ -69,11 +69,18 @@ jobs:
         cd ./workstations
         rm -rf var/cache/pacman/pkg/*
         rm -rf var/tmp
+        rm -rf var/games
+        rm -rf var/empty
+        rm -rf var/spool
+        rm -rf var/opt
+        rm -rf usr/src
+        rm -rf usr/local/src
         rm -rf sys
         rm -rf tmp
-        rm -rf boot
         rm -rf proc
         rm -rf dev
+        rm -rf mnt
+        rm -rf run
         tar cJf ../workstations-rootfs.tar.xz .
         sha256sum ../workstations-rootfs.tar.xz > ../workstations-rootfs.tar.xz.sha256
         cd ..
