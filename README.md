@@ -1,7 +1,7 @@
 # unofficial-archrootfs
 
 <p align="left">
-  <img src="https://github.com/Zhoneym/unofficial-archrootfs/assets/140673973/3147ae73-4ca8-403d-8942-f1b0d4724f7d" width="225"/>
+  <img src="https://github.com/Zhoneym/unofficial-archrootfs/assets/140673973/3147ae73-4ca8-403d-8942-f1b0d4724f7d" width="512"/>
 </p>
 
 
