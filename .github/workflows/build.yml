@@ -62,6 +62,29 @@ jobs:
         tar cJf ../base-devel-rootfs.tar.xz .
         sha256sum ../base-devel-rootfs.tar.xz > ../base-devel-rootfs.tar.xz.sha256
         cd ..
+        mkdir workstations
+        pacstrap ./workstations base base-devel git python go cmake clang llvm lldb neofetch nodejs ruby rust glslang boost sudo pacman-contrib openssl zstd zlib lz4 fmt ninja
+        echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' > ./workstations/etc/pacman.d/mirrorlist
+        curl -o ./workstations/etc/pacman.conf https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/raw/main/pacman.conf?inline=false
+        cd ./workstations
+        rm -rf var/cache/pacman/pkg/*
+        rm -rf var/tmp
+        rm -rf var/games
+        rm -rf var/empty
+        rm -rf var/spool
+        rm -rf var/opt
+        rm -rf usr/src
+        rm -rf usr/local/src
+        rm -rf sys
+        rm -rf tmp
+        rm -rf boot
+        rm -rf proc
+        rm -rf dev
+        rm -rf mnt
+        rm -rf run
+        tar cJf ../workstations-rootfs.tar.xz .
+        sha256sum ../workstations-rootfs.tar.xz > ../workstations-rootfs.tar.xz.sha256
+        cd ..
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -71,7 +94,8 @@ jobs:
          base-rootfs.tar.xz.sha256
          base-devel-rootfs.tar.xz
          base-devel-rootfs.tar.xz.sha256
-    
+         workstations-rootfs.tar.xz
+         workstations-rootfs.tar.xz.sha256
   release:
     runs-on: ubuntu-latest
     needs: build
@@ -88,12 +112,15 @@ jobs:
       run: |
         cp release_images/base-rootfs.tar.xz ./base-rootfs.tar.xz
         cp release_images/base-devel-rootfs.tar.xz ./base-devel-rootfs.tar.xz
+        cp release_images/workstations-rootfs.tar.xz ./workstations-rootfs.tar.xz
     - name: Unzip rootfs 
       run: |
         mkdir -p ./base
         mkdir -p ./base-devel
+        mkdir -p ./workstations
         tar xf base-rootfs.tar.xz -C ./base
-        tar xf base-devel-rootfs.tar.xz -C ./base-devel  
+        tar xf base-devel-rootfs.tar.xz -C ./base-devel
+        tar xf workstations-rootfs.tar.xz -C ./workstations
     - name: Generate Dockerfiles
       run: |
         cat > Dockerfile <<EOF 
@@ -101,8 +128,6 @@ jobs:
         COPY ./base /
         CMD ["/bin/bash"]
         EOF
-    - name: ls -l
-      run: ls -l && ls -l ./base && ls -l ./base-devel 
     - name: Build base image
       run: |
         docker build -t zhoneym/unofficial-archrootfs-base:latest -f ./Dockerfile ./
@@ -118,6 +143,18 @@ jobs:
       run: |
         docker build -t zhoneym/unofficial-archrootfs-base-devel:latest -f ./Dockerfile ./
         rm -rf Dockerfile
+    - name: Generate Dockerfiles
+      run: |
+        cat > Dockerfile <<EOF 
+        FROM scratch
+        COPY ./workstations /
+        CMD ["/bin/bash"]
+        EOF
+    - name: Build workstations image
+      run: |
+        docker build -t zhoneym/unofficial-archrootfs-workstations:latest -f ./Dockerfile ./
+        rm -rf Dockerfile
+
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
@@ -130,6 +167,9 @@ jobs:
     - name: Push base-devel image
       run: docker push zhoneym/unofficial-archrootfs-base-devel:latest
     
+    - name: Push workstations image
+      run: docker push zhoneym/unofficial-archrootfs-workstations:latest
+
     - name: Release rootfs
       uses: softprops/action-gh-release@v1
       env:
