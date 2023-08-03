@@ -23,6 +23,5 @@ We offer three options:
 
 
  - base: Minimal package set to define a basic Arch Linux installation
-     - 
  - base-devel: Minimum package set to define a basic Arch Linux installation and basic tools to build Arch Linux packages
  - workstations: Contains commonly used compiler tools and common system management tools (this option is very suitable for working with Microsoft WSL2)
