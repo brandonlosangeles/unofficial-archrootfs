@@ -550,6 +550,10 @@ Contains the following software packages:
 | sudo | core |
 | zlib | core |
 | zstd | core |
+
+
+
+
 Microsoft WSL2 users please download and manually import from the following link:
 
 https://github.com/Zhoneym/unofficial-archrootfs/releases
