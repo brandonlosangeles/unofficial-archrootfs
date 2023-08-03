@@ -63,7 +63,7 @@ jobs:
         sha256sum ../base-devel-rootfs.tar.xz > ../base-devel-rootfs.tar.xz.sha256
         cd ..
         mkdir workstations
-        pacstrap ./workstations base base-devel git python go cmake clang llvm lldb neofetch nodejs ruby rust glslang boost sudo pacman-contrib openssl zstd zlib lz4 fmt ninja
+        pacstrap ./workstations base base-devel net-tools networkmanager git python go cmake clang llvm lldb neofetch nodejs ruby rust glslang boost sudo pacman-contrib openssl zstd zlib lz4 fmt ninja
         echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch' > ./workstations/etc/pacman.d/mirrorlist
         curl -o ./workstations/etc/pacman.conf https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/raw/main/pacman.conf?inline=false
         cd ./workstations
