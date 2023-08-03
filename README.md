@@ -18,10 +18,24 @@ Compared to the official Docker image repository, this repository has the follow
  - A simpler and more transparent packaging method
  - High degree of freedom and customizability
 
-
 We offer three options:
 
-
  - base: Minimal package set to define a basic Arch Linux installation
+
+```bash
+docker pull zhoneym/unofficial-archrootfs-base:latest
+```
+
  - base-devel: Minimum package set to define a basic Arch Linux installation and basic tools to build Arch Linux packages
+
+```bash
+docker pull zhoneym/unofficial-archrootfs-base-devel:latest
+```
+
  - workstations: Contains commonly used compiler tools and common system management tools (this option is very suitable for working with Microsoft WSL2)
+
+```bash
+docker pull zhoneym/unofficial-archrootfs-workstations:latest
+```
+
+Arch Linux official Docker image repository : https://gitlab.archlinux.org/archlinux/archlinux-docker
