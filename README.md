@@ -14,11 +14,11 @@ Compared to the official Docker image repository, this repository has the follow
 
 
  - Faster update frequency
- - Simpler packaging method
+ - A simpler and more transparent packaging method
  - High degree of freedom and customizability
 
 
-We offer three options
+We offer three options:
 
 
  - base: Minimal package set to define a basic Arch Linux installation
