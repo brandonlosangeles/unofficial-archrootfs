@@ -43,4 +43,14 @@ Microsoft WSL2 users please download and manually import from the following link
 https://github.com/Zhoneym/unofficial-archrootfs/releases
 
 
-Arch Linux official Docker image repository : https://gitlab.archlinux.org/archlinux/archlinux-docker
+Arch Linux official Docker image gitlab repository: https://gitlab.archlinux.org/archlinux/archlinux-docker
+
+OCI-Compatible images for Arch Linux official:
+
+https://hub.docker.com/_/archlinux
+
+https://hub.docker.com/r/archlinux/archlinux/
+
+https://quay.io/repository/archlinux/archlinux
+
+https://github.com/archlinux/archlinux-docker/pkgs/container/archlinux
