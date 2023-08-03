@@ -38,4 +38,9 @@ docker pull zhoneym/unofficial-archrootfs-base-devel:latest
 docker pull zhoneym/unofficial-archrootfs-workstations:latest
 ```
 
+Microsoft WSL2 users please download and manually import from the following link:
+
+https://github.com/Zhoneym/unofficial-archrootfs/releases
+
+
 Arch Linux official Docker image repository : https://gitlab.archlinux.org/archlinux/archlinux-docker
